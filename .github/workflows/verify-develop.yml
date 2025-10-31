@@ -1,4 +1,4 @@
-name: Verify Develop
+name: Verify Develop (Windows Only)
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ env:
 
 jobs:
   setup:
-    runs-on: macos-latest
+    runs-on: macos-latest  # macOS runner 也能跑 Windows export
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,13 +30,6 @@ jobs:
 
       - name: Set Godot executable
         run: echo "GODOT_EXE=$(pwd)/godot/Godot.app/Contents/MacOS/Godot" >> $GITHUB_ENV
-
-      - name: Build Mac executable
-        run: |
-          mkdir -p build/mac
-          ${{ env.GODOT_EXE }} --no-window \
-            --export-release "ashleigh-town-macOS" \
-            build/mac/Ashleigh-Town.app
 
       - name: Build Windows executable
         run: |
