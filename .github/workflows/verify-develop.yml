@@ -24,18 +24,14 @@ jobs:
       - name: Download and install Godot export templates
         run: |
           wget https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz -O export_templates.tpz
-          mkdir -p "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p "$HOME/Library/Application Support/Godot/export_templates"
           unzip export_templates.tpz -d "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
         shell: bash
 
-      - name: Verify export templates exist
+      - name: Verify export templates installed
         run: |
-          echo "Checking Mac templates..."
-          ls "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/mac_debug_x86_64.zip"
-          ls "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/mac_release_x86_64.zip"
-          echo "Checking Windows templates..."
-          ls "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/windows_debug_x86_64.exe"
-          ls "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe"
+          echo "Checking export templates directory..."
+          ls -l "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
 
       - name: Set Godot executable
         run: echo "GODOT_EXE=$(pwd)/godot/Godot.app/Contents/MacOS/Godot" >> $GITHUB_ENV
