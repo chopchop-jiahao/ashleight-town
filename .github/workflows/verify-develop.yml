@@ -38,11 +38,13 @@ jobs:
           mkdir -p build/mac
           ${{ env.GODOT_EXE }} --no-window \
             --export-release "ashleigh-town-macOS" \
-            build/mac/Ashleigh-Town.app
+            build/mac/Ashleigh-Town.app \
+            --templates-path "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/templates"
 
       - name: Build Windows executable
         run: |
           mkdir -p build/windows
           ${{ env.GODOT_EXE }} --no-window \
             --export-release "ashleigh-town-windows" \
-            build/windows/Ashleigh-Town.exe
+            build/windows/Ashleigh-Town.exe \
+            --templates-path "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/templates"
