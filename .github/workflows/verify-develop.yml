@@ -16,14 +16,16 @@ jobs:
 
       - name: Download Godot (macOS)
         run: |
-          wget https://github.com/godotengine/godot-builds/releases/download/4.5.1-stable/Godot_v4.5.1-stable_macos.universal.zip -O godot-mac.zip
+          wget https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_macos.universal.zip -O godot-mac.zip
           unzip godot-mac.zip -d godot
           chmod +x godot/Godot.app/Contents/MacOS/Godot
         shell: bash
 
-      - name: Download Godot export templates
+      - name: Download and install Godot export templates
         run: |
-          wget https://github.com/godotengine/godot-builds/releases/download/4.5.1-stable/Godot_v4.5.1-stable_export_templates.tpz -O export_templates.tpz
+          wget https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz -O export_templates.tpz
+          mkdir -p "$HOME/Library/Application Support/Godot/export_templates"
+          unzip export_templates.tpz -d "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
         shell: bash
 
       - name: Set Godot executable
@@ -34,13 +36,11 @@ jobs:
           mkdir -p build/mac
           ${{ env.GODOT_EXE }} --no-window \
             --export-release "ashleigh-town-macOS" \
-            build/mac/Ashleigh-Town.app \
-            --templates-path $(pwd)/export_templates.tpz
+            build/mac/Ashleigh-Town.app
 
       - name: Build Windows executable
         run: |
           mkdir -p build/windows
           ${{ env.GODOT_EXE }} --no-window \
             --export-release "ashleigh-town-windows" \
-            build/windows/Ashleigh-Town.exe \
-            --templates-path $(pwd)/export_templates.tpz
+            build/windows/Ashleigh-Town.exe
