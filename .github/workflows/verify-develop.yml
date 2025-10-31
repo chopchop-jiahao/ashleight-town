@@ -23,13 +23,13 @@ jobs:
 
       - name: Set Godot executable
         run: echo "GODOT_EXE=$(pwd)/godot/Godot.app/Contents/MacOS/Godot" >> $GITHUB_ENV
-      
+
       - name: Build Mac executable
         run: |
           mkdir -p build/mac
-          ${{ env.GODOT_EXE }} --export-release "Mac OS X" build/mac/MyGame.app
+          ${{ env.GODOT_EXE }} --no-window --export-release "ashleigh-town-macOS" build/mac/Ashleigh-Town.app
 
       - name: Build Windows executable
         run: |
           mkdir -p build/windows
-          ${{ env.GODOT_EXE }} --export-release "Windows Desktop" build/windows/MyGame.exe
+          ${{ env.GODOT_EXE }} --no-window --export-release "ashleigh-town-windows" build/windows/Ashleigh-Town.exe
