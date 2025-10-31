@@ -1,4 +1,4 @@
-name: Verify Develop (Windows Only)
+name: Verify Develop
 
 on:
   pull_request:
@@ -8,8 +8,8 @@ env:
   GODOT_VERSION: 4.5.1
 
 jobs:
-  setup:
-    runs-on: macos-latest  # macOS runner 也能跑 Windows export
+  build:
+    runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -28,8 +28,23 @@ jobs:
           unzip export_templates.tpz -d "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
         shell: bash
 
+      - name: Verify templates
+        run: |
+          echo "Checking Mac template..."
+          ls -l "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/macos.zip"
+          echo "Checking Windows templates..."
+          ls -l "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe"
+          ls -l "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/windows_debug_x86_64.exe"
+
       - name: Set Godot executable
         run: echo "GODOT_EXE=$(pwd)/godot/Godot.app/Contents/MacOS/Godot" >> $GITHUB_ENV
+
+      - name: Build Mac executable
+        run: |
+          mkdir -p build/mac
+          ${{ env.GODOT_EXE }} --no-window \
+            --export-release "ashleigh-town-macOS" \
+            build/mac/Ashleigh-Town.app
 
       - name: Build Windows executable
         run: |
