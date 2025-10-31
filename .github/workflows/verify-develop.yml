@@ -27,9 +27,15 @@ jobs:
       - name: Build Mac executable
         run: |
           mkdir -p build/mac
-          ${{ env.GODOT_EXE }} --no-window --export-release "ashleigh-town-macOS" build/mac/Ashleigh-Town.app
+          ${{ env.GODOT_EXE }} --no-window \
+            --export-release "ashleigh-town-macOS" \
+            build/mac/Ashleigh-Town.app \
+            --templates-path export_templates/Godot_v4.5.1-stable_export_templates.tpz
 
       - name: Build Windows executable
         run: |
           mkdir -p build/windows
-          ${{ env.GODOT_EXE }} --no-window --export-release "ashleigh-town-windows" build/windows/Ashleigh-Town.exe
+          ${{ env.GODOT_EXE }} --no-window \
+            --export-release "ashleigh-town-windows" \
+            build/windows/Ashleigh-Town.exe \
+            --templates-path export_templates/Godot_v4.5.1-stable_export_templates.tpz
