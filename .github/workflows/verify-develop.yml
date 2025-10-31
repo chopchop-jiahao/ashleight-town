@@ -21,6 +21,11 @@ jobs:
           chmod +x godot/Godot.app/Contents/MacOS/Godot
         shell: bash
 
+      - name: Download Godot export templates
+        run: |
+          wget https://github.com/godotengine/godot-builds/releases/download/4.5.1-stable/Godot_v4.5.1-stable_export_templates.tpz -O export_templates.tpz
+        shell: bash
+
       - name: Set Godot executable
         run: echo "GODOT_EXE=$(pwd)/godot/Godot.app/Contents/MacOS/Godot" >> $GITHUB_ENV
 
@@ -30,7 +35,7 @@ jobs:
           ${{ env.GODOT_EXE }} --no-window \
             --export-release "ashleigh-town-macOS" \
             build/mac/Ashleigh-Town.app \
-            --templates-path export_templates/Godot_v4.5.1-stable_export_templates.tpz
+            --templates-path $(pwd)/export_templates.tpz
 
       - name: Build Windows executable
         run: |
@@ -38,4 +43,4 @@ jobs:
           ${{ env.GODOT_EXE }} --no-window \
             --export-release "ashleigh-town-windows" \
             build/windows/Ashleigh-Town.exe \
-            --templates-path export_templates/Godot_v4.5.1-stable_export_templates.tpz
+            --templates-path $(pwd)/export_templates.tpz
