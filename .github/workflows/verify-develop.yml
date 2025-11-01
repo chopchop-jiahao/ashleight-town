@@ -39,7 +39,7 @@ jobs:
           ${{ env.GODOT_EXE }} --no-window \
             --export-release "ashleigh-town-macOS" \
             build/mac/Ashleigh-Town.app \
-            --templates-path "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
+            --templates-path "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/templates"
 
       - name: Build Windows executable
         run: |
@@ -47,4 +47,4 @@ jobs:
           ${{ env.GODOT_EXE }} --no-window \
             --export-release "ashleigh-town-windows" \
             build/windows/Ashleigh-Town.exe \
-            --templates-path "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
+            --templates-path "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/templates"
