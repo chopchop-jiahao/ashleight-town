@@ -21,13 +21,22 @@ jobs:
           chmod +x godot/Godot.app/Contents/MacOS/Godot
         shell: bash
 
-      - name: Download and inspect Godot export templates
+      - name: Download and install Godot export templates
         run: |
           wget https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz -O export_templates.tpz
           mkdir -p "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
           unzip export_templates.tpz -d "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
-          echo "Listing all extracted files:"
-          find "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable" -type f
+          
+          # 搬檔案到 Godot 預期的路徑
+          mv "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/templates/macos.zip" \
+             "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/macos.zip"
+          mv "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/templates/windows_release_x86_64.exe" \
+             "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/windows_release_x86_64.exe"
+          mv "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/templates/windows_debug_x86_64.exe" \
+             "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/windows_debug_x86_64.exe"
+
+          echo "Listing all installed templates:"
+          ls -l "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
         shell: bash
 
       - name: Set Godot executable
@@ -39,7 +48,7 @@ jobs:
           ${{ env.GODOT_EXE }} --no-window \
             --export-release "ashleigh-town-macOS" \
             build/mac/Ashleigh-Town.app \
-            --templates-path "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/templates"
+            --templates-path "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
 
       - name: Build Windows executable
         run: |
@@ -47,4 +56,4 @@ jobs:
           ${{ env.GODOT_EXE }} --no-window \
             --export-release "ashleigh-town-windows" \
             build/windows/Ashleigh-Town.exe \
-            --templates-path "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable/templates"
+            --templates-path "$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
