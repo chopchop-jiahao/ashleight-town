@@ -60,13 +60,7 @@ jobs:
         run: $GODOT_EXE --headless --path . --editor --quit
 
       - name: Run GUT tests
-        run: |
-          $GODOT_EXE --headless --path . \
-            --script addons/gut/gut_cmdln.gd \
-            -gdir=tests \
-            -gexit=true \
-            -gresult=junit \
-            -goutfile=gut_results.xml
+        run: $GODOT_EXE --headless --path . --script scripts/run_all_gut_tests.gd
 
       - name: Upload GUT test results
         uses: actions/upload-artifact@v4
