@@ -16,6 +16,12 @@ jobs:
         with:
           ref: ${{ github.base_ref }}
 
+      - name: Debug CI working directory
+        run: |
+          pwd
+          ls -l
+
+
       - name: Extract old version string
         run: bash ci/extract_version.sh
         id: extract-version-old
