@@ -26,4 +26,4 @@ fi
 # ----------------------------
 # Output the version number
 # ----------------------------
-echo "Extracted version: $VERSION"
+echo "version-string=$VERSION" >> $GITHUB_OUTPUT
