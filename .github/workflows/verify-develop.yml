@@ -62,13 +62,16 @@ jobs:
       - name: Run GUT tests
         run: |
           $GODOT_EXE --headless --path . --script addons/gut/gut_cmdln.gd \
-            -gdir=tests -gexit=true -gformat=junit -goutput=gut_results.xml
+            -gdir=tests \
+            -gexit=true \
+            -gjunit_xml_file=gut_results.xml
 
       - name: Upload GUT test results
         uses: actions/upload-artifact@v4
         with:
           name: gut-test-results
           path: gut_results.xml
+
 
 
   build:
