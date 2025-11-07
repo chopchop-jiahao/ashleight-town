@@ -56,6 +56,9 @@ jobs:
       - name: Install Godot and templates
         run: bash ci/install_godot.sh ${{ env.GODOT_VERSION }}
 
+      - name: Reimport Godot project for GUT
+        run: $GODOT_EXE --headless --path . --editor --quit
+
       - name: Run GUT tests
         run: |
           $GODOT_EXE --headless --path . \
