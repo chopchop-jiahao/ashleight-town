@@ -11,10 +11,14 @@ config_version=5
 [application]
 
 config/name="ashleigh town"
-config/version="0.0.0"
+config/version="0.0.1"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
+[rendering]
+
+textures/vram_compression/import_etc2_astc=true

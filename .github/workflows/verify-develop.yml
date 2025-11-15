@@ -8,28 +8,96 @@ env:
   GODOT_VERSION: 4.5.1
 
 jobs:
-  setup:
-    runs-on: macos-latest
+  check-version-bump:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.base_ref }}
+
+      - name: Extract old version string
+        run: bash ci/extract_version.sh
+        id: extract-version-old
+
+      - name: Checkout current branch again
         uses: actions/checkout@v3
 
-      - name: Download Godot (macOS)
-        run: |
-          wget https://github.com/godotengine/godot-builds/releases/download/4.5.1-stable/Godot_v4.5.1-stable_macos.universal.zip -O godot-mac.zip
-          unzip godot-mac.zip -d godot
-          chmod +x godot/Godot.app/Contents/MacOS/Godot
-        shell: bash
+      - name: Extract new version string
+        run: bash ci/extract_version.sh
+        id: extract-version-new
 
-      - name: Set Godot executable
-        run: echo "GODOT_EXE=$(pwd)/godot/Godot.app/Contents/MacOS/Godot" >> $GITHUB_ENV
-      
-      - name: Build Mac executable
-        run: |
-          mkdir -p build/mac
-          ${{ env.GODOT_EXE }} --export-release "Mac OS X" build/mac/MyGame.app
+      - name: Check semantic version bump
+        run: bash ci/check_version_bump.sh "${{ steps.extract-version-old.outputs.version-string }}" "${{ steps.extract-version-new.outputs.version-string }}"
 
-      - name: Build Windows executable
+  run-project-validation:
+    needs: check-version-bump
+    runs-on: macos-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+
+      - name: Install Godot and templates
+        run: bash ci/install_godot.sh ${{ env.GODOT_VERSION }}
+
+      - name: Open Godot editor for reimport
+        run: $GODOT_EXE --editor --headless --quit || true
+
+      - name: Run project validations
+        run: $GODOT_EXE --script scripts/run_validations.gd --headless
+
+  run-gut-tests:
+    needs: run-project-validation
+    runs-on: macos-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+
+      - name: Install Godot and templates
+        run: bash ci/install_godot.sh ${{ env.GODOT_VERSION }}
+
+      - name: Reimport Godot project for GUT
+        run: $GODOT_EXE --headless --path . --editor --quit
+
+      - name: Run GUT tests
         run: |
-          mkdir -p build/windows
-          ${{ env.GODOT_EXE }} --export-release "Windows Desktop" build/windows/MyGame.exe
+          $GODOT_EXE --headless --path . --script addons/gut/gut_cmdln.gd \
+            -gdir=tests \
+            -gexit=true \
+            -gjunit_xml_file=gut_results.xml
+
+      - name: Upload GUT test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: gut-test-results
+          path: gut_results.xml
+
+
+
+  build:
+    needs: run-gut-tests
+    runs-on: macos-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+
+      - name: Install Godot and templates
+        run: bash ci/install_godot.sh ${{ env.GODOT_VERSION }}
+
+      - name: Open Godot editor for reimport
+        run: $GODOT_EXE --editor --headless --quit || true
+
+      - name: Build Mac and Windows executables
+        run: bash ci/build_godot.sh ${{ env.GODOT_VERSION }}
+
+      - name: Upload Mac build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ashleigh-Town-Mac
+          path: build/mac
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ashleigh-Town-Windows
+          path: build/windows
