@@ -1,0 +1,71 @@
+name: Submit Develop
+
+on:
+  push:
+    branches: ['develop']
+
+env:
+  GODOT_VERSION: 4.5.1
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Godot via script
+        run: bash ci/install_godot.sh ${{ env.GODOT_VERSION }}
+
+      - name: Reimport Godot project
+        run: $GODOT_EXE --editor --headless --quit || true
+
+      - name: Build Mac and Windows executables
+        run: bash ci/build_godot.sh ${{ env.GODOT_VERSION }}
+
+      - name: Upload Mac build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ashleigh-Town-Mac
+          path: build/mac
+
+      - name: Upload Windows build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ashleigh-Town-Windows
+          path: build/windows
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Extract version
+        id: extract-version
+        run: |
+          VERSION=$(bash ci/extract_version.sh)
+          echo "version-string=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Download Mac artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: Ashleigh-Town-Mac
+          path: artifacts/mac
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: Ashleigh-Town-Windows
+          path: artifacts/windows
+
+      - name: Tag and upload artifacts to release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.extract-version.outputs.version-string }}
+          commit: ${{ github.sha }}
+          prerelease: true
+          artifacts: |
+            artifacts/mac/**
+            artifacts/windows/**
