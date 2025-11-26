@@ -1,5 +1,8 @@
 name: Submit Develop
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: ['develop']
